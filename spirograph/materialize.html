@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spirograph</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body class="black">
+  <h1 class="white-text">Spirograph Demo</h1>
+  <a href="#" data-target="side-menu" class="sidenav-trigger btn-flat white-text" id="hamburger-menu" style="background:transparent;box-shadow:none;"><i class="material-icons">menu</i></a>
+  <ul id="side-menu" class="sidenav">
+    <li><div id="side-menu-content"></div></li>
+  </ul>
+  <script type="module" src="main.js"></script>
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.sidenav');
+      M.Sidenav.init(elems, {edge: 'left'});
+    });
+  </script>
+</body>
+</html>
