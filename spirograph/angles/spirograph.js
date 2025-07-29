@@ -1,7 +1,3 @@
-// Chain of connected segments animation logic
-import { baseCanvas } from './canvas-setup.js';
-import { dpr } from './canvas-setup.js';
-
 export let segments = [
   { length: 1000, angle: 0, angularSpeed: 1, alpha: 0, colorSpeed: 0 },
   { length: 1000, angle: 0, angularSpeed: -2.00001, alpha: 5, colorSpeed: -10 },
@@ -11,7 +7,7 @@ export let speed = 800;
 export let animationId = null;
 export let stepsPerFrame = 1;
 export let colorAlpha = 1.0;
-let baseCtx, baseAngle=0;
+let baseCtx, baseAngle = 0;
 
 export function setRatios(r, d) {
   RADIUS_RATIO = r;

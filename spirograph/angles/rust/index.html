@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spirograph</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../style.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
   <!-- Add Material Icons font -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
+
 <body class="black">
-  <h1 class="white-text">Spirograph Demo</h1>
-  <a href="#" data-target="side-menu" class="sidenav-trigger btn-flat white-text" id="hamburger-menu" style="background:transparent;box-shadow:none;"><i class="material-icons">menu</i></a>
+  <a href="#" data-target="side-menu" class="sidenav-trigger btn-flat white-text" id="hamburger-menu"
+    style="background:transparent;box-shadow:none;"><i class="material-icons">menu</i></a>
   <ul id="side-menu" class="sidenav">
     <li>
       <div id="side-menu-content">
@@ -19,13 +21,69 @@
       </div>
     </li>
   </ul>
-  <script type="module" src="main.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       var elems = document.querySelectorAll('.sidenav');
-      M.Sidenav.init(elems, {edge: 'left'});
+      M.Sidenav.init(elems, { edge: 'left' });
+    });
+  </script>
+  <script type="module">
+    import { startSpirographWasm } from './spirograph-wasm.js';
+
+    // Default segments (with angle: 0 for UI/compat)
+    const defaultSegments = [
+      { length: 2, angle: 0, angularSpeed: 1.00000, alpha: 0, colorSpeed: 0 },
+      { length: 2, angle: 0, angularSpeed: -1.0002, alpha: 0, colorSpeed: 0 },
+      { length: 2, angle: 0, angularSpeed: 1.0005, alpha: 0, colorSpeed: 1 },
+      // { length: 2, angle: 0, angularSpeed: 0, alpha: 0, colorSpeed: 3 },
+      { length: 5, angle: 0, angularSpeed: -.0009, alpha: 8, colorSpeed: 1 },
+      // { length: 2, angle: 0, angularSpeed: -.0003, alpha: 3, colorSpeed: 1 },
+      // { length: 0, angle: 0, angularSpeed:   .00010001, alpha: 3, colorSpeed: -2 },
+    ];
+    const speed = 8000;
+
+    // Compact encoding: length~angularSpeed~alpha~colorSpeed _ ...
+    function encodeSegments(segments) {
+      // Only encode the fields we want in the URL
+      return segments.map(s => [s.length, s.angularSpeed, s.alpha, s.colorSpeed].join("~"))
+        .join("_");
+    }
+    function decodeSegments(str) {
+      return str.split('_').map(segStr => {
+        const [length, angularSpeed, alpha, colorSpeed] = segStr.split('~').map(Number);
+        // Always add angle: 0 for UI/compat
+        return { length, angle: 0, angularSpeed, alpha, colorSpeed };
+      });
+    }
+
+    function getSegmentsFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const segStr = params.get('segments');
+      if (!segStr) return null;
+      try {
+        return decodeSegments(segStr);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setSegmentsToUrl(segments) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('segments', encodeSegments(segments));
+      const newUrl = window.location.pathname + '?' + params.toString();
+      window.history.replaceState({}, '', newUrl);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      let segments = getSegmentsFromUrl();
+      if (!segments) {
+        segments = defaultSegments;
+        setSegmentsToUrl(segments);
+      }
+      startSpirographWasm(segments, speed, window.devicePixelRatio || 1);
     });
   </script>
 </body>
+
 </html>
